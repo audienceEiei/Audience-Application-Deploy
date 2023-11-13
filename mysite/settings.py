@@ -86,8 +86,8 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='your_default_email_
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            'client_id': os.getenv("GOOGLE_CLIENT_ID"),
-            'secret': os.getenv("GOOGLE_SECRET_KEY"),
+            'client_id': config('GOOGLE_CLIENT_ID', default='your_google_client_id'),
+            'secret': config('GOOGLE_SECRET_KEY', default='your_google_secret_key'),
             'key': '',
         },
         'SCOPE': ['profile','email', ],
