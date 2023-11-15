@@ -23,7 +23,7 @@ def register(request):
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
             messages.success(request, "Registration successful.")
-            return redirect("audience:dashboard")
+            return redirect("audience:homepage")
 
         messages.error(request, "Unsuccessful registration. Invalid information.")
     form = NewUserForm()
@@ -66,7 +66,7 @@ def update_profile(request):
             profile = UserProfile.objects.create(user=user, gender=gender, age=age, country=country)
             profile.save()
             messages.success(request, "Profile information updated successfully.")
-            return redirect("audience:dashboard")
+            return redirect("audience:homepage")
         else:
             messages.error(request, "Unsuccessful profile update. Invalid information.")
             messages.error(request, form.errors)
