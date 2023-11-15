@@ -1,27 +1,40 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from user_profile.models import UserProfile
+from requests.auth import HTTPBasicAuth
 import requests
+import logging
+from django.http import HttpResponse
 
 
 # Create your views here.
-def dashboard(request):
-    data = {
-        "FR": {
-            "gold": 90,
-            "silver": 90,
-            "bronze": 100
-        },
-        "US": {
-            "gold": 100,
-            "silver": 100,
-            "bronze": 100
-        },
-    }
-    # data = requests.get("https://sota-backend.fly.dev/medals/")
+def homepage(request):
+    if request.user:
+        user_profile = UserProfile.objects.get(user=request.user)
+        try:
+            sport_ids = list(map(int, user_profile.sport_ids.split(",")))
+        except Exception:
+            sport_ids = []
+        header = {
+            "Accept": "application/json",
+            "Authorization": "02e2cdc6ac5d17a2bb67824c91f51ac55ce46465133f92233e3daa552120bcb3"
+        }
+        url = "https://referite-6538ffaf77b0.herokuapp.com/api/schedule/all"
+        data = requests.get(url, headers=header).json()
+        url = "https://referite-6538ffaf77b0.herokuapp.com/api/schedule/sport"
+        all_sports = requests.get(url, headers=header).json()
+        context = {"sport_ids": sport_ids, "all_sports": all_sports, "data": data}
+
+        return render(request, "audience/homepage.html", context)
+    return render(request, "audience/homepage.html")
+
+
+def scoreboard(request):
+    str_data = requests.get("https://sota-backend.fly.dev/medals/")
+    data = str_data.json()
     sorted_data = sorted(data.items(), key=lambda x: x[1]['gold'] + x[1]['silver'] + x[1]['bronze'], reverse=True)
-    context = {"page": "dashboard", "detail": "show total medals for every countries", "data": dict(sorted_data)}
-    return render(request, "audience/dashboard.html", context)
+    context = {"page": "scoreboard", "detail": "show total medals for every countries", "data": dict(sorted_data)}
+    return render(request, "audience/scoreboard.html", context)
 
 
 def sports(request):
@@ -97,129 +110,22 @@ def unsubscribe(request, sport_id):
 
 
 def sport_program(request):
-    data = {
-        "schedule_list": [
-            {
-                "datetime": "2021-10-1T00:00:00",
-                "sport": [
-                    {
-                        "_id": 1,
-                        "revision_id": 11,
-                        "sport_id": 2,
-                        "sport_name": "Archery",
-                        "sport_type": [
-                            {
-                                "_id": 2,
-                                "revision_id": 22,
-                                "type_id": 1,
-                                "type_name": "Individual",
-                                "status": "RECORDED"
-                            },
-                            {
-                                "_id": 3,
-                                "revision_id": 33,
-                                "type_id": 2,
-                                "type_name": "Team",
-                                "status": "RECORDED"
-                            }
-                        ],
-                        "is_ceremonies": False,
-                        "sport_status": "RECORDED"
-                    },
-                    {
-                        "_id": 1,
-                        "revision_id": 11,
-                        "sport_id": 2,
-                        "sport_name": "BasketBall",
-                        "sport_type": [
-                            {
-                                "_id": 2,
-                                "revision_id": 22,
-                                "type_id": 1,
-                                "type_name": "Individual",
-                                "status": "RECORDED"
-                            },
-                            {
-                                "_id": 3,
-                                "revision_id": 33,
-                                "type_id": 2,
-                                "type_name": "Team",
-                                "status": "RECORDED"
-                            }
-                        ],
-                        "is_ceremonies": False,
-                        "sport_status": "RECORDED"
-                    }
-                ]
-            },
-            {
-                "datetime": "2021-10-2T00:00:00",
-                "sport": [
-                    {
-                        "_id": 1,
-                        "revision_id": 11,
-                        "sport_id": 2,
-                        "sport_name": "Batminton",
-                        "sport_type": [
-                            {
-                                "_id": 2,
-                                "revision_id": 22,
-                                "type_id": 1,
-                                "type_name": "Individual",
-                                "status": "RECORDED"
-                            },
-                            {
-                                "_id": 3,
-                                "revision_id": 33,
-                                "type_id": 2,
-                                "type_name": "Team",
-                                "status": "RECORDED"
-                            }
-                        ],
-                        "is_ceremonies": False,
-                        "sport_status": "RECORDED"
-                    }
-                ]
-            },
-            {
-                "datetime": "2021-10-3T00:00:00",
-                "sport": [
-                    {
-                        "_id": 1,
-                        "revision_id": 11,
-                        "sport_id": 2,
-                        "sport_name": "BasketBall",
-                        "sport_type": [
-                            {
-                                "_id": 2,
-                                "revision_id": 22,
-                                "type_id": 1,
-                                "type_name": "Individual",
-                                "status": "RECORDED"
-                            },
-                            {
-                                "_id": 3,
-                                "revision_id": 33,
-                                "type_id": 2,
-                                "type_name": "Team",
-                                "status": "RECORDED"
-                            }
-                        ],
-                        "is_ceremonies": False,
-                        "sport_status": "RECORDED"
-                    }
-                ]
-            },
-        ]
-    }
-    all_sports = {
-        "1": "Atheletics",
-        "2": "Archery",
-        "3": "Artistic Gymnastics",
-        "4": "Artistic Swimming",
-        "5": "BasketBall"
-    }
-    context = {"data": data,
-               "all_sports": all_sports}
+    api_key = '02e2cdc6ac5d17a2bb67824c91f51ac55ce46465133f92233e3daa552120bcb3'
+    all_url = 'https://referite-6538ffaf77b0.herokuapp.com/api/schedule/all'
+    sport_url = 'https://referite-6538ffaf77b0.herokuapp.com/api/schedule/sport'
+    headers = {'Accept': 'application/json',
+               'Authorization': api_key}
 
-    return render(request, "audience/sport_program.html", context)
+    try:
+        data = requests.get(all_url, headers=headers).json()
+        all_sports = requests.get(sport_url, headers=headers).json()
+
+        context = {"data": data, "all_sports": all_sports}
+        return render(request, "audience/sport_program.html", context)
+
+    except requests.RequestException as e:
+        # Log the exception for debugging
+        logging.error(f"Error fetching data from API: {e}")
+
+        # Return an error response or handle the exception as needed
+        return HttpResponse("Error fetching data from API", status=500)
