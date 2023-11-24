@@ -44,8 +44,7 @@
                                 <td>{{ forloop.counter }}</td>
                                 <td class="country-cell">    
                                     <i class="fi fi-{{ country|default:'x'|lower }}"></i>
-                                    &nbsp;&nbsp;&nbsp;
-                                    {{country|get_country_name}}
+                                    <span>{{ country|get_country_name }}</span>
                                 </td>
                                 <td>{{ medals.gold}}</td>
                                 <td>{{ medals.silver }}</td>
