@@ -76,3 +76,11 @@
   display: flex;
   align-items: center;
 }
+
+.flag-icon {
+  margin-right: 10px;
+}
+
+.country-name {
+  text-align: left;
+}
