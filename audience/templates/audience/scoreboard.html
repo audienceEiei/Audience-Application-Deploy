@@ -37,8 +37,9 @@
                             <tr>
                                 <td>{{ forloop.counter }}</td>
                                 <td class="country-cell">    
-                                    <i class="fi fi-{{ country|default:'x'|lower }} flag-icon"></i>
-                                    <span class="country-name">{{ country|get_country_name }}</span>
+                                    <i class="fi fi-{{ country|default:'x'|lower }}"></i>
+                                    &nbsp;&nbsp;&nbsp;
+                                    {{country|get_country_name}}
                                 </td>
                                 <td>{{ medals.gold}}</td>
                                 <td>{{ medals.silver }}</td>

@@ -73,14 +73,6 @@
 }
 
 .country-cell {
-  display: flex;
-  align-items: center;
-}
-
-.flag-icon {
-  margin-right: 10px;
-}
-
-.country-name {
+  align-items: left;
   text-align: left;
 }
